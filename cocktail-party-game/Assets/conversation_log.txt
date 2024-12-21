@@ -1,0 +1,4 @@
+EntityA-EntityB: "I don't like the red cars"
+EntityB-EntityA: "Interesting, I dont drive cars"
+EntityC-EntityD: "What do you drive?"
+EntityD-EntityC: "I drive a bright red car"
