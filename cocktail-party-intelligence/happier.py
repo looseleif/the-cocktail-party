@@ -7,8 +7,8 @@ model = outlines.models.transformers("TheBloke/Mistral-7B-OpenOrca-AWQ", device=
 def happiness_rater(conversation):
     """You are a conversational assistant trained to evaluate interactions.
 
-    Given a conversation, rate the overall happiness level on a scale from 1 to 10,
-    where 1 is very unhappy and 10 is extremely happy.
+    Please determine the new happiness level that
+    the agent will have after hearing the latest comment from the user based on this context.
 
     # Examples
 
@@ -23,20 +23,11 @@ def happiness_rater(conversation):
     Conversation: {{ conversation }}
     Happiness Rating: """
 
-conversations = [
-    "Hi there! I'm so excited to share my good news with you!",
-    "I'm having a really bad day and need someone to talk to.",
-    "You always know how to make me smile, thank you!",
-    "I just can't seem to catch a break lately...",
-    "I'm feeling great today! Everything is going my way!",
-    "I feel so overwhelmed and stressed right now.",
-    "Thanks for always being there for me, it means a lot.",
-    "I'm so tired of everything going wrong."
-]
-
-prompts = [happiness_rater(conversation) for conversation in conversations]
-
-ratings = [outlines.generate.format(model, int)(prompt) for prompt in prompts]
-
-for conversation, rating in zip(conversations, ratings):
-    print(f"Conversation: {conversation}\nHappiness Rating: {rating}\n")
+def get_happiness(conversation):
+    try:
+        prompt = happiness_rater(conversation)
+        happiness_rating = outlines.generate.format(model, int)(prompt)
+        return happiness_rating
+    except Exception as e:
+        print(f"Happiness rating failed: {e}")
+        return 5  # Default happiness value

@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from threading import Lock
 from llama_cpp import Llama
 import random
+from happier import get_happiness
 
 manager_app = Flask(__name__)
 
@@ -48,12 +49,11 @@ def initialize_state():
                     "name": agent["name"],
                     "dynamics": [agent["dynamics"]],
                     "backstory": agent.get("backstory", ""),
-                    "secret": game_state["secrets"].get(f"secret_{i}", "No secret assigned")  # Add this line
+                    # "secret": game_state["secrets"].get(f"secret_{i}", "No secret assigned")
                 }
                 for i, agent in enumerate(agents)
             }
 
-        
         if len(game_state["matter_of_fact"]) < 2:
             return jsonify({"error": "Not enough facts to generate story and secrets."}), 400
         if not game_state["story"]:
@@ -80,36 +80,32 @@ def talk_to_agent():
         agent = game_state["agents"][agent_id]
         agent_attributes = agent["dynamics"][-1]
 
-        prompt = agent["name"]
-        secret = agent["secret"]
         story_context = game_state.get("story", "")
         facts = '; '.join(game_state.get("matter_of_fact", []))
+        secrets = '; '.join(game_state.get("secrets", {}))
         full_prompt = (
-            f"{prompt}\n"
+            f"You are an agent named {agent['name']} participating in a narrative game. Read the context carefully and reply after 'Agent:'.\n"
             f"Story Context: {story_context}\n"
             f"Facts: {facts}\n"
             f"Agent Dynamics: {build_dynamics(agent_attributes)}\n"
-            f"Secret: {secret}\n"
+            f"Secrets: {secrets}\n"
             f"User: {user_input}\n"
             f"Agent:"
         )
 
+        # Print the context being sent to the model
+        print("Context sent to the model:")
+        print(full_prompt)
+
     response = llamacpp_model(full_prompt)
-    
-    print(f"Raw Response: {response}")
-
-    
-    # Extract the text from the response
-    response_text = (
-        response.get("choices")[0].get("text").strip()
-        if "choices" in response and len(response["choices"]) > 0
-        else "No response generated."
-    )
-
-    # Print the response text to the console
+    response_text = response.get("choices")[0].get("text").strip() if response else "No response generated."
     print(f"Agent Response: {response_text}")
     
+    happiness = get_happiness(response_text)
+    print(f"Calculated Happiness: {happiness}")
+
     new_agent_attributes = {k: max(0, min(1, v + random.uniform(-0.1, 0.1))) for k, v in agent_attributes.items()}
+    new_agent_attributes["happiness"] = happiness / 10.0  # Scale happiness to 0-1
 
     with lock:
         game_state["agents"][agent_id]["dynamics"].append(new_agent_attributes)
@@ -118,19 +114,16 @@ def talk_to_agent():
             "agent_id": agent_id,
             "player_id": player_id,
             "input": user_input,
-            "response": response,
+            "response": response_text,
+            "happiness": happiness,
             "agent_dynamics": new_agent_attributes
         })
 
     return jsonify({
-        "response": response,
+        "response": response_text,
+        "happiness": happiness,
         "agent_dynamics": new_agent_attributes
     }), 200
 
 if __name__ == "__main__":
     manager_app.run(host="0.0.0.0", port=5555)
-
-
-# curl -X POST http://localhost:5555/initialize_state \
-# -H "Content-Type: application/json" \
-# -d @context.json
