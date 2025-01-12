@@ -180,18 +180,26 @@ class MainWindow(QMainWindow):
         group_box = QGroupBox(agent_data['name'])
         layout = QGridLayout()
 
-        # Access the most recent dynamics (assuming it's a list of dictionaries)
-        latest_dynamics = agent_data["dynamics"][-1]
+        # Access the most recent dynamics
+        latest_dynamics = agent_data.get("dynamics", [{}])[-1]
+        emotion_changes = agent_data.get("emotion_changes", {})
 
         for i, (dynamic, value) in enumerate(latest_dynamics.items()):
+            if not isinstance(value, int):
+                continue  # Ensure only integer values are processed
+
             label = QLabel(f"{dynamic.capitalize()}:")
             bar = QProgressBar()
-            bar.setRange(0, 100)
-            bar.setValue(int(value * 100))
+            bar.setRange(0, 10)
+            bar.setValue(value)
 
-            # Adding visual indicator for recent changes
-            change_indicator = QLabel("▲" if value > 0.5 else "▼")  # Example visual indicator
-            change_indicator.setStyleSheet("color: green;" if value > 0.5 else "color: red;")
+            # Determine if there's a change to display
+            change = emotion_changes.get(dynamic, None)
+            if change is not None:
+                change_indicator = QLabel("▲" if change > 0 else "▼")
+                change_indicator.setStyleSheet("color: green;" if change > 0 else "color: red;")
+            else:
+                change_indicator = QLabel(" ")  # No change indicator for initial load
 
             layout.addWidget(label, i, 0)
             layout.addWidget(bar, i, 1)
@@ -199,7 +207,6 @@ class MainWindow(QMainWindow):
 
         group_box.setLayout(layout)
         self.dynamics_layout.addWidget(group_box)
-
 
     def clear_dynamics(self):
         while self.dynamics_layout.count():
@@ -216,20 +223,20 @@ class MainWindow(QMainWindow):
             self.log_message("Please select an agent and enter a message.")
             return
 
-        # Log the payload being sent
-        self.log_message(f"Talking to agent: {selected_agent_name} (ID: {selected_agent_id})")
         payload = {
             "agent_id": selected_agent_id,
             "player_id": "p1",
             "input": user_input
         }
-        self.log_message(f"Payload: {json.dumps(payload, indent=2)}")
 
         try:
             response = requests.post(TALK_URL, json=payload)
             response.raise_for_status()
             data = response.json()
+
             self.log_message(f"Agent: {data['response']}")
+
+            # Update game state after interaction
             self.refresh_game_state()
         except requests.exceptions.RequestException as e:
             self.log_message(f"Error talking to agent: {e}")

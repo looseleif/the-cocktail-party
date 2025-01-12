@@ -24,9 +24,6 @@ initial_game_state = {
 
 active_game_state = {}  # Active running state
 
-def build_dynamics(attributes):
-    return {emotion: round(value, 1) for emotion, value in attributes.items()}
-
 @manager_app.route("/initialize_state", methods=["POST"])
 def initialize_state():
     global active_game_state
@@ -49,7 +46,7 @@ def initialize_state():
             active_game_state["agents"] = {
                 agent["agent_id"]: {
                     "name": agent["name"],
-                    "dynamics": [{emotion: random.uniform(0, 1) for emotion in get_emotion_change([]).keys()}],
+                    "dynamics": [{emotion: random.randint(0, 10) for emotion in get_emotion_change([]).keys()}],
                     "backstory": agent.get("backstory", "")
                 }
                 for agent in agents
@@ -90,7 +87,7 @@ def talk_to_agent():
             f"--- Context for the Agent ---\n"
             f"Story Context:\n{story_context}\n\n"
             f"Facts:\n{facts}\n\n"
-            f"Agent Dynamics:\n{json.dumps(build_dynamics(agent_attributes), indent=2)}\n\n"
+            f"Agent Dynamics:\n{json.dumps(agent_attributes, indent=2)}\n\n"
             f"Secrets:\n{secrets}\n\n"
             f"User Input:\n{user_input}\n"
             f"Agent Response:\n"
@@ -111,7 +108,7 @@ def talk_to_agent():
 
     # Update dynamics with new values
     new_agent_attributes = {
-        emotion: max(0, min(1, agent_attributes.get(emotion, 0.5) + change / 10.0))
+        emotion: max(0, min(10, agent_attributes.get(emotion, 5) + change))
         for emotion, change in emotion_changes.items()
     }
 
@@ -141,5 +138,3 @@ def get_active_state():
 
 if __name__ == "__main__":
     manager_app.run(host="0.0.0.0", port=5555)
-
-
