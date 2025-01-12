@@ -4,7 +4,7 @@ from outlines.samplers import greedy
 model = outlines.models.transformers("TheBloke/Mistral-7B-OpenOrca-AWQ", device="cuda")
 
 @outlines.prompt
-def emotion_rater(conversation, emotion):
+def emotion_rater(context, emotion):
     """You are a conversational assistant trained to evaluate interactions.
 
     Please determine the updated {emotion} level for the agent, which should be within 1 or 2 points up or down
@@ -22,22 +22,19 @@ def emotion_rater(conversation, emotion):
 
     # TASK
 
-    Conversation: {{ conversation }}
-    Current {emotion.capitalize()} Level: {{ current_level }}
-    Updated {emotion.capitalize()} Level: """
+    Conversation: {{ context }}
+    """
 
-def get_emotion_values(conversation, current_dynamics):
+def get_emotion_values(context):
     emotions = ["happiness", "sadness", "anger", "fear", "surprise", "disgust", "trust", "anticipation", "boredom", "curiosity"]
     updated_emotions = {}
 
     for emotion in emotions:
         try:
-            current_level = current_dynamics.get(emotion, 5)  # Default to 5 if emotion not in dynamics
-            prompt = emotion_rater(conversation=conversation, emotion=emotion, current_level=current_level)
+            prompt = emotion_rater(context=context, emotion=emotion)
             updated_level = outlines.generate.format(model, int)(prompt)
-            updated_emotions[emotion] = max(0, min(10, updated_level))  # Ensure value stays between 0 and 10
+            updated_emotions[emotion] = max(0, min(10, updated_level))
         except Exception as e:
             print(f"{emotion.capitalize()} rating failed: {e}")
-            updated_emotions[emotion] = current_level  # Retain current level if error occurs
 
     return updated_emotions

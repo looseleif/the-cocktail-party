@@ -99,17 +99,16 @@ def talk_to_agent():
     response_text = response.get("choices")[0].get("text").strip() if response else "No response generated."
     print(f"Agent Response: {response_text}")
 
-    # Get emotion changes and filter only non-zero changes
-    emotion_changes = get_emotion_values([user_input, response_text])
-    relevant_changes = {emotion: change for emotion, change in emotion_changes.items() if change != 0}
-    print("\nRelevant Emotion Changes:")
-    for emotion, change in relevant_changes.items():
-        print(f"{emotion.capitalize()}: {change:+.2f}")
+    # Calculate updated emotion values
+    updated_emotions = calculate_updated_emotions(agent_attributes, user_input, response_text, story_context, facts, secrets)
+    print("\nUpdated Emotions:")
+    for emotion, value in updated_emotions.items():
+        print(f"{emotion.capitalize()}: {value}")
 
     # Update dynamics with new values
     new_agent_attributes = {
-        emotion: max(0, min(10, agent_attributes.get(emotion, 5) + change))
-        for emotion, change in emotion_changes.items()
+        emotion: max(0, min(10, value))
+        for emotion, value in updated_emotions.items()
     }
 
     with lock:
@@ -120,15 +119,37 @@ def talk_to_agent():
             "player_id": player_id,
             "input": user_input,
             "response": response_text,
-            "emotion_changes": relevant_changes,
             "agent_dynamics": new_agent_attributes
         })
 
     return jsonify({
         "response": response_text,
-        "emotion_changes": relevant_changes,
         "agent_dynamics": new_agent_attributes
     }), 200
+
+
+def calculate_updated_emotions(current_dynamics, user_input, agent_response, story_context, facts, secrets):
+    """
+    Calculate updated emotion values based on the current dynamics, user input, agent response, and additional context.
+    Each emotion value is adjusted up or down by 1 or 2 points within the valid range of 0 to 10.
+    """
+    context = {
+        "current_dynamics": current_dynamics,
+        "user_input": user_input,
+        "agent_response": agent_response,
+        "story_context": story_context,
+        "facts": facts,
+        "secrets": secrets
+    }
+    print("Emotion context:", json.dumps(context, indent=2))
+    
+    updated_emotions = {}
+    emotions = get_emotion_values(context)
+    updated_emotions = emotions
+    
+    print(updated_emotions)
+
+    return updated_emotions
 
 
 @manager_app.route("/get_active_state", methods=["GET"])
