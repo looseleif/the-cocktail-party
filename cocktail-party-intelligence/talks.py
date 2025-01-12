@@ -180,30 +180,25 @@ class MainWindow(QMainWindow):
         group_box = QGroupBox(agent_data['name'])
         layout = QGridLayout()
 
-        # Access the most recent dynamics
-        latest_dynamics = agent_data.get("dynamics", [{}])[-1]
-        emotion_changes = agent_data.get("emotion_changes", {})
+        # Access the exact dynamics (latest) from the JSON data
+        latest_dynamics = agent_data.get("dynamics", {})
+        if isinstance(latest_dynamics, list):
+            latest_dynamics = latest_dynamics[-1]
 
         for i, (dynamic, value) in enumerate(latest_dynamics.items()):
-            if not isinstance(value, int):
-                continue  # Ensure only integer values are processed
+            # Ensure the value is scaled between 0 and 10
+            if not isinstance(value, (int, float)):
+                continue
+
+            scaled_value = min(10, max(0, round(value)))
 
             label = QLabel(f"{dynamic.capitalize()}:")
             bar = QProgressBar()
             bar.setRange(0, 10)
-            bar.setValue(value)
-
-            # Determine if there's a change to display
-            change = emotion_changes.get(dynamic, None)
-            if change is not None:
-                change_indicator = QLabel("▲" if change > 0 else "▼")
-                change_indicator.setStyleSheet("color: green;" if change > 0 else "color: red;")
-            else:
-                change_indicator = QLabel(" ")  # No change indicator for initial load
+            bar.setValue(scaled_value)
 
             layout.addWidget(label, i, 0)
             layout.addWidget(bar, i, 1)
-            layout.addWidget(change_indicator, i, 2)
 
         group_box.setLayout(layout)
         self.dynamics_layout.addWidget(group_box)
