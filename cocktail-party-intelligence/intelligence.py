@@ -46,7 +46,7 @@ def initialize_state():
             active_game_state["agents"] = {
                 agent["agent_id"]: {
                     "name": agent["name"],
-                    "dynamics": [{emotion: random.randint(0, 10) for emotion in get_emotion_change([]).keys()}],
+                    "dynamics": [agent.get("dynamics", {})],  # Use provided dynamics instead of random values
                     "backstory": agent.get("backstory", "")
                 }
                 for agent in agents

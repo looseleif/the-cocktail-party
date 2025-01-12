@@ -8,7 +8,7 @@ def emotion_rater(conversation, emotion):
     """You are a conversational assistant trained to evaluate interactions.
 
     Please determine the change in {emotion} level that
-    the agent will have after considering the last three exchanges in the conversation.
+    the agent will have considering you can evaluate a number between -5 and 5.
 
     # Examples
 
