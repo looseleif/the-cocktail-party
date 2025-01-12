@@ -190,7 +190,7 @@ class MainWindow(QMainWindow):
         self.log_message(f"Talking to agent: {selected_agent_name} (ID: {selected_agent_id})")
         payload = {
             "agent_id": selected_agent_id,
-            "player_id": "player1",
+            "player_id": "p1",
             "input": user_input
         }
         self.log_message(f"Payload: {json.dumps(payload, indent=2)}")

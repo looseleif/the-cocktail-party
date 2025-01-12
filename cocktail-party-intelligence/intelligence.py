@@ -82,28 +82,34 @@ def talk_to_agent():
         agent_attributes = agent["dynamics"][-1]
 
         story_context = active_game_state.get("story", "")
-        facts = '; '.join(active_game_state.get("matter_of_fact", []))
-        secrets = '; '.join(active_game_state.get("secrets", {}).values())
+        facts = "; ".join(active_game_state.get("matter_of_fact", []))
+        secrets = "; ".join(active_game_state.get("secrets", {}).values())
+        
+        # Cleaner context output
         full_prompt = (
-            f"You are an agent named {agent['name']} participating in a narrative game. Read the context carefully and reply after 'Agent:'.\n"
-            f"Story Context: {story_context}\n"
-            f"Facts: {facts}\n"
-            f"Agent Dynamics: {build_dynamics(agent_attributes)}\n"
-            f"Secrets: {secrets}\n"
-            f"User: {user_input}\n"
-            f"Agent:"
+            f"--- Context for the Agent ---\n"
+            f"Story Context:\n{story_context}\n\n"
+            f"Facts:\n{facts}\n\n"
+            f"Agent Dynamics:\n{json.dumps(build_dynamics(agent_attributes), indent=2)}\n\n"
+            f"Secrets:\n{secrets}\n\n"
+            f"User Input:\n{user_input}\n"
+            f"Agent Response:\n"
         )
-
-        print("Context sent to the model:")
+        
         print(full_prompt)
 
     response = llamacpp_model(full_prompt)
     response_text = response.get("choices")[0].get("text").strip() if response else "No response generated."
     print(f"Agent Response: {response_text}")
 
+    # Get emotion changes and filter only non-zero changes
     emotion_changes = get_emotion_change([user_input, response_text])
-    print(f"Emotion Changes: {emotion_changes}")
+    relevant_changes = {emotion: change for emotion, change in emotion_changes.items() if change != 0}
+    print("\nRelevant Emotion Changes:")
+    for emotion, change in relevant_changes.items():
+        print(f"{emotion.capitalize()}: {change:+.2f}")
 
+    # Update dynamics with new values
     new_agent_attributes = {
         emotion: max(0, min(1, agent_attributes.get(emotion, 0.5) + change / 10.0))
         for emotion, change in emotion_changes.items()
@@ -117,15 +123,16 @@ def talk_to_agent():
             "player_id": player_id,
             "input": user_input,
             "response": response_text,
-            "emotion_changes": emotion_changes,
+            "emotion_changes": relevant_changes,
             "agent_dynamics": new_agent_attributes
         })
 
     return jsonify({
         "response": response_text,
-        "emotion_changes": emotion_changes,
+        "emotion_changes": relevant_changes,
         "agent_dynamics": new_agent_attributes
     }), 200
+
 
 @manager_app.route("/get_active_state", methods=["GET"])
 def get_active_state():
