@@ -1,0 +1,25 @@
+{
+    "matter_of_fact": [
+        "A massive storm is approaching the coast.",
+        "The lighthouse keeper has vanished without a trace."
+    ],
+    "story": "On a desolate island, a team of investigators must uncover the truth.",
+    "secrets": [
+        "The storm is unnatural.",
+        "The keeper was hiding something important."
+    ],
+    "players": [
+        {
+            "player_id": "player1",
+            "name": "Detective1",
+            "role": "investigator"
+        }
+    ],
+    "agents": [
+        {
+            "agent_id": "agent1",
+            "name": "Island Spirit",
+            "dynamics": {}
+        }
+    ]
+}

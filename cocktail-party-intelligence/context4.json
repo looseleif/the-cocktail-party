@@ -1,0 +1,35 @@
+{
+    "matter_of_fact": [
+        "The ancient city is on the verge of collapse.",
+        "A forbidden ritual has been performed, awakening the lost spirits."
+    ],
+    "story": "In a realm of shadows, a group of unlikely allies must seal the spirits before the city is lost forever.",
+    "secrets": [
+        "The ritual was incomplete, and the spirits are unstable.",
+        "One of the allies has been marked by the spirits."
+    ],
+    "players": [
+        {
+            "player_id": "player1",
+            "name": "Seer",
+            "role": "mage"
+        },
+        {
+            "player_id": "player2",
+            "name": "Warden",
+            "role": "guardian"
+        }
+    ],
+    "agents": [
+        {
+            "agent_id": "agent1",
+            "name": "Shadow Spirit",
+            "dynamics": {}
+        },
+        {
+            "agent_id": "agent2",
+            "name": "Ancient Protector",
+            "dynamics": {}
+        }
+    ]
+}

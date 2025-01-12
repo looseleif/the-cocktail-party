@@ -1,0 +1,25 @@
+{
+    "matter_of_fact": [
+        "The space station has lost contact with Earth.",
+        "Strange signals are coming from the asteroid belt."
+    ],
+    "story": "In the depths of space, a crew must solve the mystery of the lost signal.",
+    "secrets": [
+        "The signal is a distress call.",
+        "An alien artifact is on board."
+    ],
+    "players": [
+        {
+            "player_id": "player1",
+            "name": "Commander1",
+            "role": "commander"
+        }
+    ],
+    "agents": [
+        {
+            "agent_id": "agent1",
+            "name": "AI Companion",
+            "dynamics": {}
+        }
+    ]
+}

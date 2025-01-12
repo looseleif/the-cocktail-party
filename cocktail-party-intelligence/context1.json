@@ -1,0 +1,25 @@
+{
+    "matter_of_fact": [
+        "The kingdom is under threat from a mysterious force.",
+        "The ancient artifact holds the key to salvation."
+    ],
+    "story": "In a distant land, heroes gather to uncover hidden truths and protect their home.",
+    "secrets": [
+        "The artifact is cursed.",
+        "One of the heroes is a traitor."
+    ],
+    "players": [
+        {
+            "player_id": "player1",
+            "name": "Hero1",
+            "role": "warrior"
+        }
+    ],
+    "agents": [
+        {
+            "agent_id": "agent1",
+            "name": "Guardian",
+            "dynamics": {}
+        }
+    ]
+}
