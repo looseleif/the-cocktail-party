@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from threading import Lock
 from llama_cpp import Llama
 import random
-from spectral import get_emotion_change
+from spectral import get_emotion_values
 import json
 
 manager_app = Flask(__name__)
@@ -100,7 +100,7 @@ def talk_to_agent():
     print(f"Agent Response: {response_text}")
 
     # Get emotion changes and filter only non-zero changes
-    emotion_changes = get_emotion_change([user_input, response_text])
+    emotion_changes = get_emotion_values([user_input, response_text])
     relevant_changes = {emotion: change for emotion, change in emotion_changes.items() if change != 0}
     print("\nRelevant Emotion Changes:")
     for emotion, change in relevant_changes.items():
