@@ -42,43 +42,30 @@ def classify_interaction(player_input):
         print(f"Classification failed: {e}")
         return None
 
-# Example usage
-if __name__ == "__main__":
-    # Example inputs for testing
-    examples = [
+# Example conversations
+conversations = {
+    "Conversation 1": [
         "How was your weekend?",
         "What do you think about the latest movie in that series?",
-        "Can you explain how this system works?",
-        "The weather has been really nice lately, hasn’t it?",
-        "Why did they choose that approach for the project?",
-        "I think we should consider a different strategy for marketing.",
+        "I think we should consider a different strategy for marketing."
+    ],
+    "Conversation 2": [
         "Did you hear about the new policy changes at work?",
         "What’s your opinion on artificial intelligence ethics?",
-        "We need to focus more on sustainability in our decisions.",
+        "We need to focus more on sustainability in our decisions."
+    ],
+    "Conversation 3": [
         "Hey, do you want to grab a coffee later?",
         "What time is the meeting scheduled for tomorrow?",
-        "I suggest we allocate more resources to the development team.",
-        "Did you catch the latest episode of that show?",
-        "How do you feel about taking on that new responsibility?",
-        "The team is doing a great job; we just need to fine-tune the details.",
-        "I heard there’s a new restaurant opening downtown. Want to check it out?",
-        "Who’s responsible for finalizing the report?",
-        "This approach will save us both time and money in the long run.",
-        "What’s the best way to get to the event from here?",
-        "I believe we can achieve better results by collaborating more closely.",
-        "Hey, have you seen my notebook anywhere?",
-        "How does this tool compare to the one we used before?",
-        "We should re-evaluate our targets based on the latest data.",
-        "Are you planning to attend the workshop next week?",
-        "I feel like our current process could be more efficient with automation.",
-        "Do you know when the project deadline is?",
-        "I think adopting a hybrid work model would benefit the team.",
-        "What’s your take on the changes in the market?",
-        "I heard they’re hiring more people for the development team.",
-        "Have you thought about incorporating user feedback into the design?"
+        "I believe we can achieve better results by collaborating more closely."
     ]
+}
 
-
-    for example in examples:
-        result = classify_interaction(example)
-        print(f"Player Input: {example}\nClassification: {result}\n")
+# Main script to process conversations
+if __name__ == "__main__":
+    for convo_name, player_inputs in conversations.items():
+        print(f"Processing {convo_name}...\n")
+        for player_input in player_inputs:
+            result = classify_interaction(player_input)
+            print(f"Player Input: {player_input}\nClassification: {result}\n")
+        print("-" * 50)
