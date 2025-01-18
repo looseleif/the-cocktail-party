@@ -1,7 +1,7 @@
 import outlines
 
 # Load the model
-model = outlines.models.transformers("microsoft/Phi-3-mini-4k-instruct")
+model = outlines.models.transformers("TheBloke/Mistral-7B-OpenOrca-AWQ", device="cuda")
 
 # Define the three classification options
 options = ["Casual Conversation", "Questioning", "Influencing"]
