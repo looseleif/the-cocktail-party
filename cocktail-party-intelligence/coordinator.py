@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # Example inputs for testing
     examples = [
         "Hey, did you watch the game last night?",
-        "Can you tell me how to set up my email account?",
+        "Can you tell me what do you know about Agent 2?",
         "I believe climate change is the most urgent issue of our time."
     ]
 
